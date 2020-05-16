@@ -1,7 +1,7 @@
 ---
 deployment:
   tasks:
-    - export DEPLOYPATH=/home/cyberwatch/drupal
+    - export DEPLOYPATH=/home/grassroot/drupal
     - /bin/cp -R * $DEPLOYPATH
 
 ######################
