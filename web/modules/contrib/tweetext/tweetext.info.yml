@@ -7,7 +7,7 @@ package: CKEditor
 dependencies:
   - drupal:ckeditor
 
-# Information added by Drupal.org packaging script on 2020-06-02
-version: '8.x-1.5'
+# Information added by Drupal.org packaging script on 2020-07-08
+version: '8.x-1.8'
 project: 'tweetext'
-datestamp: 1591118064
+datestamp: 1594188750
