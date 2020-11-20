@@ -3,6 +3,7 @@
 namespace Drupal\commerce_paypal\Plugin\Commerce\PaymentGateway;
 
 use Drupal\commerce_order\Entity\OrderInterface;
+use Drupal\commerce_payment\CreditCard;
 use Drupal\commerce_payment\Entity\PaymentInterface;
 use Drupal\commerce_payment\Entity\PaymentMethodInterface;
 use Drupal\commerce_payment\Exception\HardDeclineException;
@@ -44,7 +45,7 @@ use Symfony\Component\HttpFoundation\Response;
  *     "offsite-payment" = "Drupal\commerce_paypal\PluginForm\Checkout\PaymentOffsiteForm",
  *   },
  *   credit_card_types = {
- *     "amex", "discover", "mastercard", "visa",
+ *     "amex", "dinersclub", "discover", "jcb", "maestro", "mastercard", "visa", "unionpay"
  *   },
  *   payment_method_types = {"paypal_checkout"},
  *   payment_type = "paypal_checkout",
@@ -256,6 +257,7 @@ class Checkout extends OffsitePaymentGatewayBase implements CheckoutInterface {
         'jcb' => $this->t('JCB'),
         'elo' => $this->t('Elo'),
         'hiper' => $this->t('Hiper'),
+        'unionpay' => $this->t('Union Pay'),
       ],
       '#default_value' => $this->configuration['disable_card'],
     ];
@@ -724,18 +726,6 @@ class Checkout extends OffsitePaymentGatewayBase implements CheckoutInterface {
       $order->set('checkout_flow', 'paypal_checkout');
       $order->set('checkout_step', NULL);
     }
-    elseif ($flow === 'mark') {
-      $payment_storage = $this->entityTypeManager->getStorage('commerce_payment');
-      /** @var \Drupal\commerce_payment\Entity\PaymentInterface $payment */
-      $payment = $payment_storage->create([
-        'state' => 'new',
-        'amount' => $order->getBalance(),
-        'payment_gateway' => $this->parentEntity->id(),
-        'payment_method' => $payment_method->id(),
-        'order_id' => $order->id(),
-      ]);
-      $this->createPayment($payment);
-    }
   }
 
   /**
@@ -756,7 +746,20 @@ class Checkout extends OffsitePaymentGatewayBase implements CheckoutInterface {
     // Check if we have information about the card used.
     if (isset($paypal_order['payment_source']['card'])) {
       $payment_source = $paypal_order['payment_source']['card'];
-      $payment_method->set('card_type', strtolower($payment_source['brand']));
+
+      // Remove any character that isn't A-Z, a-z or 0-9.
+      $payment_source['brand'] = strtolower(preg_replace("/[^A-Za-z0-9]/", '', $payment_source['brand']));
+
+      // We should in theory map the credit card type we get from PayPal to one
+      // expected by us, but the credit card types are not correctly documented.
+      // For example, ("Mastercard" is sent as "MASTER_CARD" but documented
+      // as "MASTERCARD").
+      $card_types = CreditCard::getTypes();
+      if (!isset($card_types[$payment_source['brand']])) {
+        throw new HardDeclineException(sprintf('Unsupported credit card type "%s".', $paypal_order['payment_source']['card']));
+      }
+
+      $payment_method->set('card_type', $payment_source['brand']);
       $payment_method->set('card_number', $payment_source['last_digits']);
     }
     $payment_method->setRemoteId($paypal_order['id']);

@@ -254,7 +254,29 @@ class CheckoutSdk implements CheckoutSdkInterface {
       }
       $items[] = $item;
     }
+
+    // Now, pass adjustments that are not "supported" by PayPal such as fees
+    // and "custom" adjustments.
+    // We could pass fees under "handling", but we can't make that assumption.
     $adjustments = $order->collectAdjustments();
+    $adjustments = $this->adjustmentTransformer->processAdjustments($adjustments);
+    foreach ($adjustments as $adjustment) {
+      // Skip included adjustments and the adjustment types we're handling
+      // below such as "shipping" and "tax".
+      if ($adjustment->isIncluded() ||
+        in_array($adjustment->getType(), ['tax', 'shipping', 'promotion'])) {
+        continue;
+      }
+      $item_total = $item_total ? $item_total->add($adjustment->getAmount()) : $adjustment->getAmount();
+      $items[] = [
+        'name' => mb_substr($adjustment->getLabel(), 0, 127),
+        'unit_amount' => [
+          'currency_code' => $adjustment->getAmount()->getCurrencyCode(),
+          'value' => Calculator::trim($adjustment->getAmount()->getNumber()),
+        ],
+        'quantity' => 1,
+      ];
+    }
 
     $breakdown = [
       'item_total' => [
