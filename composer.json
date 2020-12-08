@@ -43,7 +43,7 @@
         "drupal/google_analytics": "^3.0",
         "drupal/honeypot": "^1.30",
         "drupal/image_url_formatter": "^1.0@beta",
-        "drupal/imce": "^1.7",
+        "drupal/imce": "^2.3",
         "drupal/inline_entity_form": "^1.0@RC",
         "drupal/ludwig": "^1.0",
         "drupal/mailchimp": "^1.11",
