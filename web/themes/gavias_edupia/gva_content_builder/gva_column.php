@@ -477,8 +477,8 @@ class element_gva_column{
          $array_class_inner[] = $inner_class;
          $array_class[] = $style_class;
 
-      $column_class = implode($array_class, ' ');
-			$column_class_inner = implode($array_class_inner, ' ');
+      $column_class = implode(' ', $array_class);
+			$column_class_inner = implode(' ', $array_class_inner);
 			$column_style 	= implode('; ', $array_style );
          
 		?>

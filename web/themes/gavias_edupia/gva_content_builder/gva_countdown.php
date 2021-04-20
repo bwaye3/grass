@@ -102,7 +102,7 @@ if(!class_exists('element_gva_countdown')):
          $date = $month . '-' . $day . '-' . $year . '-' . $hour . '-' . $minutes . '-00';
          ?>
          <?php ob_start() ?>
-         <div class="gsc-countdown <?php print implode($class, ' ') ?>">
+         <div class="gsc-countdown <?php print implode(' ', $class) ?>">
             <div class="gva-countdown clearfix" data-countdown="countdown" data-date="<?php print $date ?>" <?php print gavias_content_builder_print_animate_wow_delay($animate, $animate_delay) ?>></div> 
          </div>
          <?php return ob_get_clean() ?>

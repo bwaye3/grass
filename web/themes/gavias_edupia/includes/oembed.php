@@ -1,8 +1,9 @@
 <?php
 class AutoEmbed {
     var $providers = array(
-            '#https?://(www\.)?youtube.com/watch.*#i'            => array( 'http://www.youtube.com/oembed',                     true  ),
-            'http://youtu.be/*'                                  => array( 'http://www.youtube.com/oembed',                     false ),
+            '#https?://((m|www)\.)?youtube\.com/watch.*#i'      => array( 'https://www.youtube.com/oembed', true ),
+            '#https?://((m|www)\.)?youtube\.com/playlist.*#i'   => array( 'https://www.youtube.com/oembed', true ),
+            '#https?://youtu\.be/.*#i'                          => array( 'https://www.youtube.com/oembed', true ),
             'http://blip.tv/*'                                   => array( 'http://blip.tv/oembed/',                            false ),
             '#https?://(www\.)?vimeo\.com/.*#i'                  => array( 'http://vimeo.com/api/oembed.{format}',              true  ),
             '#https?://(www\.)?dailymotion\.com/.*#i'            => array( 'http://www.dailymotion.com/services/oembed',        true  ),
@@ -111,19 +112,7 @@ class AutoEmbed {
                             }
                     }
 
-                    if ( $tagfound && preg_match_all( '/<link([^<>]+)>/i', $html, $links ) ) {
-                            foreach ( $links[1] as $link ) {
-                                    $atts = $this->parse_atts( $link );
-
-                                    if ( !empty($atts['type']) && !empty($linktypes[$atts['type']]) && !empty($atts['href']) ) {
-                                            $providers[$linktypes[$atts['type']]] = $atts['href'];
-
-                                            // Stop here if it's JSON (that's all we need)
-                                            if ( 'json' == $linktypes[$atts['type']] )
-                                                    break;
-                                    }
-                            }
-                    }
+                
             }
 
             // JSON is preferred to XML

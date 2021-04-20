@@ -62,7 +62,7 @@
               </div>
 
               <div class="course-meta clearfix">
-                <div class="block-course-title">{{'Teacher Of Course'}}</div>
+                <div class="block-course-title">{{'Teacher Of Course'|t}}</div>
                 {% if product.field_course_teacher %}
                   <div class="meta-item">
                     <div class="content">
@@ -73,7 +73,7 @@
               </div>
 
               <div class="course-meta course-information clearfix">
-                <div class="block-course-title">{{'Information Of Course'}}</div>
+                <div class="block-course-title">{{'Information Of Course'|t}}</div>
 
                 {% if product.field_course_category %}
                   <div class="meta-item">
@@ -131,7 +131,7 @@
 
               {% if field_course_includes %}
                 <div class="course-includes">
-                  <div class="block-course-title">{{'Includes'}}</div>
+                  <div class="block-course-title">{{'Includes'|t}}</div>
                   <div class="content-inner">{{ field_course_includes }}</div>
                 </div> 
               {% endif %}  
